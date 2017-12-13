@@ -44,7 +44,7 @@
     if (n > array.length) {
       return array;
     }
-    return n === undefined ? array[array.length-1] : array.slice(n);
+    return n === undefined ? array[array.length-1] : array.slice(n - 1, array.length);
   };
 
   // Call iterator(value, key, collection) for each element of collection.
@@ -83,48 +83,74 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
-    var arr = [];
-    _.each(collection, function(el, index){
-      if(test(el)){
-        arr.push(el);
+    var array = [];
+    _.each(collection, function(item, index){
+      if(test(item)){
+        array.push(item);
       }
     });
-    return arr;
+    return array;
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
-    return _.filter(collection, function(el){
-       return !test(el);
+
+    return _.filter(collection, function(item) {
+      return !test(item);
     });
+
+    // var arr = [];
+    // _.each(collection, function(item, index) {
+    //   if (!test(item)) {
+    //     arr.push(item);
+    //   }
+    // });
+    // return arr;
   };
 
   // Produce a duplicate-free version of the array.
+  // _.uniq = function(array, isSorted, iterator) {
+  //   var arr = [];
+  //   if(isSorted){
+  //     // _.each(array, function(item, index){
+  //     //   if(iterator(item[index]) !== iterator(item[index-1])){
+  //     //     arr.push(item);
+  //     //   }
+  //     // });
+
+  //     for (var i = 0; i < array.length; i++) {
+  //       if (iterator(array[i]) !== iterator(array[i - 1])) {
+  //         arr.push(array[i]);
+  //       }
+  //     }
+  //   }
+  //   return arr;
+  // };
+
   _.uniq = function(array, isSorted, iterator) {
-    var arr = [];
-    var obj = {};
+      var arr = [];
+      var obj = {};
 
-    
-    if(!isSorted){  
-      _.each(array, function(el){
-        obj[el] = el;
-    });
-      for(var key in obj){
-    arr.push(obj[key]);
-    }
-  }else{
-    if(isSorted && iterator){
-      //console.log('hi');
-      _.each(array,function(el){
-        arr.push(el);
-      })
-    }
-  }
-    return arr; 
-  };
 
+      if(!isSorted){
+        _.each(array, function(el){
+          obj[el] = el;
+      });
+        for(var key in obj){
+      arr.push(obj[key]);
+      }
+    }else{
+      if(isSorted && iterator){
+        //console.log('hi');
+        _.each(array,function(el){
+          arr.push(el);
+        })
+      }
+    }
+      return arr;
+    };
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
@@ -132,9 +158,11 @@
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
     var arr = [];
-    _.each(collection, function(el){
-      arr.push(iterator(el));
+
+    _.each(collection, function(item) {
+      arr.push(iterator(item));
     });
+
     return arr;
   };
 
@@ -177,9 +205,11 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    if (accumulator === undefined){
+    /// [0, 1, 2, 3]
+
+    if(accumulator === undefined){
       accumulator = collection[0];
-      for(var i =1; i < collection.length; i++){
+      for (var i = 1; i < collection.length; i++){
         accumulator = iterator(accumulator, collection[i]);
       }
     }else{
@@ -192,6 +222,8 @@
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
+    // [1, 2, 3, 4]   target = 3
+
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
     return _.reduce(collection, function(wasFound, item) {
@@ -200,46 +232,39 @@
       }
       return item === target;
     }, false);
-    // for(var i = 0; i < collection.length; i++){
-    //   if(collection[i] === target){
-    //     return true;
-    //   }
-    // }
-    // return false;
   };
 
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
-
-    if(collection.length === 0){
-      return true;
-    }
     iterator = iterator || _.identity;
-    return _.reduce(collection, function(isTrue, el){
-      if(!isTrue){
-        return false; 
-      }
-      return !!iterator(el);
-    },true);
 
+    return _.reduce(collection, function(truth, item) {
+      if (!truth) {
+        return false;
+      }
+      return !!iterator(item);
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
-    //if(collection.length === 0){
-      //return false;
-    //}
     iterator = iterator || _.identity;
-    return _.reduce(collection, function(isTrue, el){
-      if(isTrue){
-        return true;
-      }
-      return !!iterator(el);
-    },false);
+
+    return !_.every(collection, function(item) {
+      return !iterator(item);
+    });
+
+    // return _.reduce(collection, function(truth,item){
+    //   if(truth){
+    //     return true;
+    //   }
+    //   return !!iterator(item);
+    // }, false);
+
   };
 
 
@@ -262,6 +287,12 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    _.each(arguments, function(newObj) {
+      for (var key in newObj) {
+        obj[key] = newObj[key];
+      }
+    });
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
