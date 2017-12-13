@@ -142,11 +142,13 @@
       arr.push(obj[key]);
       }
     }else{
-      if(isSorted && iterator){
+      if(isSorted){
         //console.log('hi');
-        _.each(array,function(el){
-          arr.push(el);
-        })
+        for(var i = 0; i < array.length; i++) {
+          if(iterator(array[i]) !== iterator(array[i - 1])) {
+            arr.push(iterator(array[i]));
+          }
+        }
       }
     }
       return arr;
@@ -298,6 +300,23 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+
+    _.each(arguments, function(newObj) {
+      for (var key in newObj) {
+        if (obj[key] === undefined) {
+          obj[key] = newObj[key];
+        }
+      }
+    });
+
+    // _.each(arguments, function(newObj){
+    //   _.each(newObj, function(value, key){
+    //     if(obj[key] === undefined){
+    //       obj[key] = value;
+    //     }
+    //   });
+    // });
+    return obj;
   };
 
 
@@ -326,6 +345,7 @@
         // infromation from one function call to another.
         result = func.apply(this, arguments);
         alreadyCalled = true;
+        console.log("result = ", result)
       }
       // The new function always returns the originally computed result.
       return result;
@@ -341,6 +361,7 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
