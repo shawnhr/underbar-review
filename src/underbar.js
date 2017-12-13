@@ -345,7 +345,6 @@
         // infromation from one function call to another.
         result = func.apply(this, arguments);
         alreadyCalled = true;
-        console.log("result = ", result)
       }
       // The new function always returns the originally computed result.
       return result;
@@ -361,7 +360,15 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var obj = {};
 
+    return function() {
+      var args = JSON.stringify(arguments);
+      if (!obj[args]) {
+        obj[args] = func.apply(this, arguments);
+      }
+      return obj[args];
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
