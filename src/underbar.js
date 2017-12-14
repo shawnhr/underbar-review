@@ -363,6 +363,7 @@
     var obj = {};
 
     return function() {
+      //debugger;
       var args = JSON.stringify(arguments);
       if (!obj[args]) {
         obj[args] = func.apply(this, arguments);
@@ -417,6 +418,21 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    var result = [];
+    if(typeof functionOrKey === 'string'){
+      _.each(collection, function(item){
+        result.push(item[functionOrKey].apply(item, args));
+      })
+    }else{
+      _.each(collection, function(item){
+        result.push(functionOrKey.apply(item, args))
+      })
+
+    }
+  
+    
+    return result;
+
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -424,6 +440,7 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -432,6 +449,12 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    // var args = Array.from(arguments);
+    // console.log(args);
+    // var lengths = args.lengths;
+    // var longest = args[lengths.]
+    
+
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
