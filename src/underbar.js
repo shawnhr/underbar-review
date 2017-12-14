@@ -501,11 +501,41 @@
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    //check if each element in one array will be in all other arrays
+    //return element in all other arrays.
+
+    var args = Array.from(arguments);
+    var firstArg = args[0];
+    var restArg = args.slice(1);
+    var result = [];
+    _.each(firstArg, function(firstEl){
+      var isIntersect = _.every(restArg, function(restEl){
+        return _.contains(restEl, firstEl);
+      });
+      if(isIntersect){
+        result.push(firstEl);
+      }
+    });
+    return result;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var args = Array.from(arguments);
+    var firstArg = args[0];
+    var restArg = args.slice(1);
+    var result = [];
+    //if first agrument is not in other arrays then push it to the result array
+    _.each(firstArg, function(firstEl){
+      var isIncluded = _.some(restArg,function(restEl){
+        return _.contains(restEl, firstEl);
+      });
+      if(!isIncluded){
+        result.push(firstEl);
+      }
+    });
+    return result;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
@@ -514,5 +544,20 @@
   //
   // Note: This is difficult! It may take a while to implement.
   _.throttle = function(func, wait) {
+    //first time called
+    //within time<wait, func cannot be invoke
+    //after time=wait, function will be called again
+    //execute the function
+    //return _.delay(_.once(func),wait);
+    var invoked = false;
+    var throttled = function(){
+      if(!invoked){
+        func();
+        invoked = true;
+        //wait till settimeout, reset the invoked to false;
+        setTimeout(function(){invoked=false;}, wait); 
+      }
+    };
+    return throttled;
   };
 }());
